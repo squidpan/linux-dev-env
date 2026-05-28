@@ -1,7 +1,6 @@
 # ~/.config/shell/env.sh
 
 export PJS_ROOT="$HOME/pjs"
-
 export REPOS_ROOT="$PJS_ROOT/repos"
 export VAULTS_ROOT="$PJS_ROOT/vaults"
 export SCRIPTS_ROOT="$PJS_ROOT/scripts"

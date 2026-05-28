@@ -1,6 +1,6 @@
 # Overlay And Git Workflow
 
-This document describes how to overlay this package into the existing `linux-dev-env` repo, validate it, commit it, and push it.
+Use this workflow to overlay this package into the existing `linux-dev-env` repo and push to GitHub.
 
 ## A. Start As `bas`
 
@@ -20,7 +20,7 @@ bas
 cd ~/pjs/repos/linux-dev-env
 ```
 
-## C. Verify Current Repo
+## C. Verify Repo
 
 ```bash
 git status
@@ -28,231 +28,164 @@ git branch
 git remote -v
 ```
 
-Expected:
+Expected branch:
 
 ```text
-On branch main
+main
 ```
 
-and:
+Expected remote:
 
 ```text
-origin git@github.com:squidpan/linux-dev-env.git
+git@github.com:squidpan/linux-dev-env.git
 ```
 
-## D. Create Feature Branch
+## D. Update Main
 
 ```bash
 git checkout main
 git pull
-git checkout -b feature/user-management-framework
 ```
 
-## E. Backup Current Repo Snapshot
+## E. Create Feature Branch
+
+```bash
+git checkout -b feature/docs-reorganization-full
+```
+
+## F. Backup Current Repo
 
 ```bash
 mkdir -p ~/pjs/tmp/linux-dev-env-backups
 
 cp -R ~/pjs/repos/linux-dev-env \
-  ~/pjs/tmp/linux-dev-env-backups/linux-dev-env-before-user-management-$(date +%Y%m%d-%H%M%S)
+  ~/pjs/tmp/linux-dev-env-backups/linux-dev-env-before-docs-full-$(date +%Y%m%d-%H%M%S)
 ```
 
-## F. Extract Overlay ZIP
+## G. Extract Overlay
 
-Assuming the ZIP was downloaded to `~/Downloads`:
+Assuming downloaded ZIP is in `~/Downloads`:
 
 ```bash
 cd ~/Downloads
-unzip linux-dev-env-user-management-overlay.zip
+unzip linux-dev-env-full-docs-overlay.zip
 ```
 
-This should create:
-
-```text
-linux-dev-env-user-management-overlay/
-```
-
-## G. Overlay Files Into Repo
+## H. Overlay Files
 
 ```bash
-cp -Rv ~/Downloads/linux-dev-env-user-management-overlay/* \
+cp -Rv ~/Downloads/linux-dev-env-full-docs-overlay/* \
   ~/pjs/repos/linux-dev-env/
 ```
 
-## H. Return To Repo
+## I. Return To Repo
 
 ```bash
 cd ~/pjs/repos/linux-dev-env
 ```
 
-## I. Ensure Scripts Are Executable
+## J. Optional Rename Existing Bootstrap README
+
+If the old bootstrap README still exists at repo root:
 
 ```bash
-chmod +x setup/*.sh
+if [ -f README_bas_linux_dev_environment_full_setup_readme.md ]; then
+  mv README_bas_linux_dev_environment_full_setup_readme.md docs/bas-bootstrap-original.md
+fi
 ```
 
-## J. Inspect Tree
+## K. Make Scripts Executable
+
+```bash
+chmod +x setup/*.sh 2>/dev/null || true
+```
+
+## L. Validate Markdown Layout
 
 ```bash
 tree -a -L 3
 ```
 
-Expected high-level structure:
-
-```text
-.
-├── README.md
-├── docs
-├── profiles
-├── setup
-└── shell
-```
-
-## K. Check Script Syntax
+## M. Validate Shell Script Syntax
 
 ```bash
 bash -n setup/*.sh
 ```
 
-No output means syntax is OK.
+No output means syntax OK.
 
-## L. Check Usage Messages
-
-```bash
-bash setup/create-dev-user.sh
-bash setup/create-test-user.sh
-bash setup/install-user-shell.sh
-bash setup/update-managed-user.sh
-bash setup/delete-user.sh
-```
-
-Each should show a usage message.
-
-## M. Review Git Changes
+## N. Review Git Changes
 
 ```bash
 git status
 git diff --stat
 ```
 
-## N. Stage Changes
+## O. Stage Changes
 
 ```bash
 git add .
 ```
 
-## O. Review Staged Changes
+## P. Review Staged Changes
 
 ```bash
 git diff --cached --stat
 ```
 
-Optional full review:
+## Q. Commit
 
 ```bash
-git diff --cached
+git commit -m "docs: reorganize linux dev env architecture and user guides"
 ```
 
-## P. Commit
+## R. Push Feature Branch
 
 ```bash
-git commit -m "feat: add managed dev and tester user framework"
+git push -u origin feature/docs-reorganization-full
 ```
 
-## Q. Push Feature Branch
-
-```bash
-git push -u origin feature/user-management-framework
-```
-
-## R. Merge To Main Locally
-
-If everything looks good:
+## S. Merge To Main
 
 ```bash
 git checkout main
 git pull
-git merge feature/user-management-framework
+git merge feature/docs-reorganization-full
 ```
 
-## S. Push Main
+## T. Push Main
 
 ```bash
 git push
 ```
 
-## T. Optional Cleanup Feature Branch
+## U. Verify Remote
 
 ```bash
-git branch -d feature/user-management-framework
+git status
+git log --oneline -5
 ```
 
-Optional remote cleanup:
-
-```bash
-git push origin --delete feature/user-management-framework
-```
-
-## U. Configure Shared Projects
-
-```bash
-sudo bash setup/configure-shared-projects.sh
-```
-
-## V. Dry Run User Update
-
-Example:
-
-```bash
-sudo bash setup/update-managed-user.sh bas base --dry-run
-```
-
-For a future dev user:
-
-```bash
-sudo bash setup/update-managed-user.sh dev1 dev --dry-run
-```
-
-## W. Create A Dev User Later
-
-```bash
-sudo bash setup/create-dev-user.sh dev1
-sudo bash setup/install-user-shell.sh dev1 dev
-```
-
-## X. Create A Tester/Ted User Later
-
-```bash
-sudo bash setup/create-test-user.sh ted1
-sudo bash setup/install-user-shell.sh ted1 tester
-```
-
-## Y. Add Users To Manifest
-
-Edit:
+Optionally check in browser:
 
 ```text
-profiles/managed-users.csv
+https://github.com/squidpan/linux-dev-env
 ```
 
-Example:
-
-```csv
-bas,base
-dev1,dev
-ted1,tester
-```
-
-## Z. Update All Managed Users
-
-Dry run:
+## V. Optional Cleanup
 
 ```bash
-sudo bash setup/update-all-managed-users.sh --dry-run
+git branch -d feature/docs-reorganization-full
+git push origin --delete feature/docs-reorganization-full
 ```
 
-Apply:
+## W. After This
+
+Switch back to MotorWeb work.
+
+Recommended next command:
 
 ```bash
-sudo bash setup/update-all-managed-users.sh
+cd /opt/projects/motorweb
+git status
 ```

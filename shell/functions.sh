@@ -17,19 +17,14 @@ activate-venv() {
 dev-check() {
     echo "--- user ---"
     whoami
-
     echo "--- shell ---"
     echo "$SHELL"
-
     echo "--- pjs ---"
     echo "$PJS_ROOT"
-
     echo "--- python ---"
     python3.13 --version 2>/dev/null || echo "python3.13 not found"
-
     echo "--- git ---"
     git --version
-
     echo "--- docker ---"
     docker --version 2>/dev/null || echo "docker not found or unavailable"
 }

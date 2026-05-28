@@ -1,18 +1,33 @@
-# User Management Framework
+# User Management Guide
 
-## Goal
+## Purpose
 
-Use `bas` as the reference environment while managing real users through this repo.
+Manage dev/tester users consistently from the repo-defined baseline.
 
-The repo should enforce:
+## User Types
 
-- consistent shell files
-- consistent directory structure
-- consistent profile type
-- consistent shared project permissions
-- safe user lifecycle management
+```text
+base    -> bas
+dev     -> dev1, dev2, appdev1
+tester  -> ted1, tester-a, jimi-tester
+```
 
-## Baseline Managed Directories
+## Why Not Clone `/home/bas`?
+
+Do not copy `/home/bas` directly.
+
+It may contain:
+
+- SSH private keys
+- browser cookies
+- Obsidian state
+- VS Code state
+- PyCharm cache
+- `.env` files
+- shell history
+- temporary files
+
+## Managed Directories
 
 Each managed user gets:
 
@@ -24,6 +39,43 @@ Each managed user gets:
 ~/bin
 ~/.config/shell
 ~/dotfiles/originals
+```
+
+## Manifest
+
+File:
+
+```text
+profiles/managed-users.csv
+```
+
+Example:
+
+```csv
+bas,base
+dev1,dev
+dev2,dev
+ted1,tester
+```
+
+## Configure Shared Projects
+
+```bash
+sudo bash setup/configure-shared-projects.sh
+```
+
+## Create Dev User
+
+```bash
+sudo bash setup/create-dev-user.sh dev1
+sudo bash setup/install-user-shell.sh dev1 dev
+```
+
+## Create Tester/Ted User
+
+```bash
+sudo bash setup/create-test-user.sh ted1
+sudo bash setup/install-user-shell.sh ted1 tester
 ```
 
 ## Update One User
@@ -41,21 +93,6 @@ sudo bash setup/update-managed-user.sh dev1 dev
 ```
 
 ## Update All Users
-
-Edit:
-
-```text
-profiles/managed-users.csv
-```
-
-Example:
-
-```csv
-bas,base
-dev1,dev
-dev2,dev
-ted1,tester
-```
 
 Dry run:
 
@@ -75,6 +112,12 @@ sudo bash setup/update-all-managed-users.sh
 bash setup/check-managed-user.sh dev1 dev
 ```
 
+## List Managed Users
+
+```bash
+bash setup/list-managed-users.sh
+```
+
 ## Archive User
 
 ```bash
@@ -89,13 +132,13 @@ Archives go to:
 
 ## Delete User
 
-Safer delete with archive:
+With archive:
 
 ```bash
 sudo bash setup/delete-user.sh dev1
 ```
 
-Delete without archive:
+Without archive:
 
 ```bash
 sudo bash setup/delete-user.sh dev1 --no-archive
@@ -103,29 +146,20 @@ sudo bash setup/delete-user.sh dev1 --no-archive
 
 Protected users:
 
-- root
-- pl
-- bas
+```text
+root
+pl
+bas
+```
 
 The delete script refuses to delete these.
 
-## Recommended Operational Flow
+## Operational Flow
 
-1. Update repo-managed shell/profile files.
-2. Commit changes.
-3. Dry-run update.
-4. Apply to one test user.
-5. Check user.
-6. Apply to all managed users.
-7. Commit operational notes.
-
-Example:
-
-```bash
-sudo bash setup/update-managed-user.sh dev1 dev --dry-run
-sudo bash setup/update-managed-user.sh dev1 dev
-bash setup/check-managed-user.sh dev1 dev
-
-sudo bash setup/update-all-managed-users.sh --dry-run
-sudo bash setup/update-all-managed-users.sh
-```
+1. Update repo-managed files.
+2. Commit.
+3. Dry-run one user.
+4. Apply to one user.
+5. Check.
+6. Update all users.
+7. Commit notes if needed.

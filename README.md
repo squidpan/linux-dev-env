@@ -1,44 +1,76 @@
 # linux-dev-env
 
-Reusable Linux developer-environment framework for building and managing clean Linux users from a `bas` template model.
+Reusable Linux developer-environment framework for building, documenting, and managing clean Linux users from a `bas` template model.
 
 ## Purpose
 
 This repo supports:
 
-- `bas` — base/template developer account
+- `bas` — base/reference developer account
 - `dev` users — full developer accounts
 - `tester` / `ted` users — lighter tester accounts
 - shared project access under `/opt/projects`
 - consistent shell/profile installation
 - user update/reconciliation from repo-managed baseline
 - user archive/delete lifecycle management
+- repeatable Linux developer workstation setup
 
 This repo does **not** clone `/home/bas` directly.
 
-Instead, `bas` acts as the reference model, while reusable shell files, profile definitions, and management scripts live in Git.
-
-## Why Not Clone `/home/bas` Directly?
-
-Directly copying `/home/bas` can accidentally copy:
-
-- SSH private keys
-- browser cookies
-- Chrome profiles
-- Obsidian state
-- VS Code state
-- PyCharm caches
-- `.env` secrets
-- shell history
-- temporary files
-- stale project data
-
-The safer pattern is:
+Instead:
 
 ```text
-bas = reference/template
+bas = reference/template account
 linux-dev-env repo = source of truth
 dev/tester users = managed targets
+```
+
+## Golden Rule
+
+The `linux-dev-env` repository is the source of truth.
+
+Do **not** manually modify managed user shell configuration if the change should apply to more than one user.
+
+Instead:
+
+1. Modify repo files.
+2. Commit changes.
+3. Dry-run against one user.
+4. Apply to one user.
+5. Validate.
+6. Roll out to all managed users.
+7. Commit any documentation updates.
+
+## Architecture Layers
+
+```text
+Layer 1 - Operating System
+    Pop!_OS
+
+Layer 2 - Shared Infrastructure
+    /opt/projects
+    docker
+    groups
+
+Layer 3 - User Profiles
+    base
+    dev
+    tester
+
+Layer 4 - Shell Framework
+    shell/*.sh
+
+Layer 5 - Development Tooling
+    git
+    Python 3.13
+    VS Code
+    Obsidian
+    PyCharm / JetBrains Toolbox
+
+Layer 6 - Applications / Workflows
+    motorweb
+    mw_notes_job
+    obsidian-skills-ng
 ```
 
 ## Repository Structure
@@ -72,9 +104,20 @@ linux-dev-env/
 │   └── tester/
 │       └── profile.env
 └── docs/
-    ├── overlay-and-git-workflow.md
-    └── user-management.md
+    ├── architecture.md
+    ├── bas-bootstrap.md
+    ├── user-management.md
+    └── overlay-and-git-workflow.md
 ```
+
+## Main Guides
+
+Read these in order:
+
+1. [`docs/architecture.md`](docs/architecture.md)
+2. [`docs/bas-bootstrap.md`](docs/bas-bootstrap.md)
+3. [`docs/user-management.md`](docs/user-management.md)
+4. [`docs/overlay-and-git-workflow.md`](docs/overlay-and-git-workflow.md)
 
 ## User Types
 
@@ -141,6 +184,12 @@ Example:
 /opt/projects/motorweb
 ```
 
+Shared group:
+
+```text
+projects
+```
+
 If Git reports dubious ownership:
 
 ```bash
@@ -149,7 +198,7 @@ git config --global --add safe.directory /opt/projects/motorweb
 
 ## Common Commands
 
-Configure shared projects:
+Configure shared project area:
 
 ```bash
 sudo bash setup/configure-shared-projects.sh
@@ -169,7 +218,7 @@ sudo bash setup/create-test-user.sh ted1
 sudo bash setup/install-user-shell.sh ted1 tester
 ```
 
-Update one user from current repo baseline:
+Update one user:
 
 ```bash
 sudo bash setup/update-managed-user.sh dev1 dev
@@ -205,6 +254,23 @@ List managed users:
 bash setup/list-managed-users.sh
 ```
 
+## Managed Users Manifest
+
+File:
+
+```text
+profiles/managed-users.csv
+```
+
+Example:
+
+```csv
+bas,base
+dev1,dev
+dev2,dev
+ted1,tester
+```
+
 ## Python 3.13 Workflow
 
 Use explicit Python 3.13:
@@ -230,3 +296,15 @@ su - username
 ```
 
 That is not a full desktop session.
+
+## Current Project Context
+
+This repo supports work on:
+
+- `/opt/projects/motorweb`
+- `mw_notes_job`
+- `obsidian-skills-ng`
+- Python learning
+- Spring Boot learning
+- Docker-based development
+- Obsidian/ChatGPT workflow experiments
