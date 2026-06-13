@@ -1,0 +1,24 @@
+@startuml
+package "Context Engineering Framework" {
+  [Project Context]
+  [AI Bootstrap]
+  [Current State]
+  [Decisions]
+
+  [Project Context] --> [AI Bootstrap]
+  [Current State] --> [AI Bootstrap]
+  [Decisions] --> [AI Bootstrap]
+}
+
+package "Projects" {
+  [Career System]
+  [Motorweb]
+  [Linux Dev Env]
+  [Obsidian Skills]
+}
+
+[AI Bootstrap] --> [Career System]
+[AI Bootstrap] --> [Motorweb]
+[AI Bootstrap] --> [Linux Dev Env]
+[AI Bootstrap] --> [Obsidian Skills]
+@enduml
